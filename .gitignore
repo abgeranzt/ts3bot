@@ -1,0 +1,9 @@
+# Python related
+__pycache__/
+env/
+
+# Local files
+local/
+.*/
+test*
+logs/
