@@ -5,7 +5,7 @@ from telnetlib import Telnet
 import time
 
 # local
-from ts3bot.logger import Logger
+from ts3bot.logger import get_logger
 
 class AuthError(ConnectionError):
     """Raise when query authentification fails."""  
@@ -22,7 +22,7 @@ class Query:
         self._passwd = passwd
         self._port = port
         self._tn = Telnet()
-        self.logger = Logger().get_logger("query")
+        self.logger = get_logger("query")
             
     def cl_connect(self):
         """Connect to client query through telnet connection."""
