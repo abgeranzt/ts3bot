@@ -84,7 +84,7 @@ class Query:
                 
     def keep_alive(self, freq=180):
         """
-        Keep query connection alive by sending version requests.
+        Keep query connection alive by sending whoami requests.
         Run as child process.
         Argument: Frequency in seconds.
         - freq: int 
