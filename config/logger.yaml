@@ -18,7 +18,7 @@ handlers:
     maxBytes: 1048576
     backupCount: 4
 loggers:
-  __main__:
+  query:
     level: INFO
     handlers: [stdout, file]
     
