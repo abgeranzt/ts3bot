@@ -59,7 +59,7 @@ class Query:
     def sv_connect_tn(self):
         """
         Connect to server query though telnet connection.
-        Return session object.
+        
         """
         pass
     
@@ -84,7 +84,7 @@ class Query:
                 
     def keep_alive(self, freq=180):
         """
-        Keep query connection alive by sending whoami requests.
+        Query current schandlerid to keep connection alive.
         Run as child process.
         Argument: Frequency in seconds.
         - freq: int 
@@ -92,7 +92,7 @@ class Query:
         while True:
             self.logger.debug("Sending keep alive request.")
             try:
-                self._tn.write("whoami\n".encode())
+                self._tn.write("currentschandlerid\n".encode())
             except OSError as err:
                 self.logger.error(f'Keep alive request for query at "{self._host}" failed.')
                 self.logger.debug(err)
