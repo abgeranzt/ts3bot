@@ -58,8 +58,9 @@ class Query:
     
     def sv_connect_tn(self):
         """
+        --- Placeholder ---
         Connect to server query though telnet connection.
-        
+        --- Placeholder ---
         """
         pass
     
@@ -86,7 +87,8 @@ class Query:
         """
         Encode and send message string to query.
         - msg: str
-        - freq: int        
+        - freq: int
+        - max_retry: int
         """
         retry = 0
         while true:
