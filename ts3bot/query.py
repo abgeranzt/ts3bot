@@ -12,7 +12,7 @@ class AuthError(ConnectionError):
 
 class Query:
     """
-    TeamSpeak Query API.
+    Basic API for TeamSpeak Queries.
     - host: str
     - port: str
     - passwd: str
@@ -81,6 +81,32 @@ class Query:
                 err_msg = f'Connection to query at "{self._host}" closed.'
                 self.logger.warning(err_msg)
                 raise ConnectionAbortedError(err_msg, err)
+    
+    def send(self, msg, freq=5, max_retry=3):
+        """
+        Encode and send message string to query.
+        - msg: str
+        - freq: int        
+        """
+        retry = 0
+        while true:
+            try:
+                self.logger.debug(f'(1/2) Sending message to query at "{self._host}".')
+                self.logger.debug(f'(2/2) Message body: "{msg}"')
+                self._tn.write(f"{msg}\n".encode(), timeout)
+                break
+            except OSError as err:
+                self.logger.error(f'Sending message to query at "{self._host}" failed.')
+                self.logger.debug(err)
+                if retry > max_retry:
+                    self.logger.critical(f'Sending message to query at "{self._host}" failed after {retry + 1} attempts.')
+                    self.logger.error('Aborting message.')
+                    raise ConnectionError("Failed to send message.")
+                self.logger.debug(f"Attempting to resend message in {freq} seconds.")
+                time.sleep(freq)
+                freq *= 2
+                retry += 1
+                continue
                 
     def keep_alive(self, freq=180):
         """
