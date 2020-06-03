@@ -18,7 +18,10 @@ handlers:
     maxBytes: 1048576
     backupCount: 4
 loggers:
-  query:
+  client_query:
     level: INFO
     handlers: [stdout, file]
-    
+  parser:
+    level: INFO
+    handlers: [stdout, file]
+

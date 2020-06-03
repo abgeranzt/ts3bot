@@ -16,8 +16,8 @@ class Client_Query:
     - apikey: str
     """
     def __init__(self,
-                 host="127.0.0.1",
-                 port="25639",
+                 host,
+                 port,
                  apikey):
         self.logger = get_logger("client_query")
         self._host = host
@@ -116,3 +116,4 @@ class Client_Query:
                 # Kill process.
                 return False
             time.sleep(freq)
+
