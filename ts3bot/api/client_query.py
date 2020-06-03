@@ -6,25 +6,26 @@ import time
 
 # local
 from ts3bot.logger import get_logger
+from ts3bot.misc import AuthError
 
-class AuthError(ConnectionError):
-    """Raise when query authentification fails."""  
-
-class Query:
+class Client_Query:
     """
-    Basic API for TeamSpeak Queries.
+    Basic API for TeamSpeak client query.
     - host: str
     - port: str
-    - passwd: str
+    - apikey: str
     """
-    def __init__(self, host, port, passwd):
+    def __init__(self,
+                 host="127.0.0.1",
+                 port="25639",
+                 apikey):
+        self.logger = get_logger("client_query")
         self._host = host
-        self._passwd = passwd
         self._port = port
+        self._apikey = apikey
         self._tn = Telnet()
-        self.logger = get_logger("query")
-            
-    def cl_connect(self):
+    
+    def connect(self):
         """Connect to client query through telnet connection."""
         try:
             self.logger.info(f'Connecting to client query at "{self._host}".')
@@ -56,32 +57,20 @@ class Query:
             self.logger.debug(err)
             raise ConnectionError(err_msg, err)
     
-    def sv_connect_tn(self):
-        """
-        --- Placeholder ---
-        Connect to server query though telnet connection.
-        --- Placeholder ---
-        """
-        pass
-    
-    def sv_connect_ssh(self):
-        """
-        --- Placeholder ---
-        Connect to server query through SSH connection.
-        --- Placeholder ----
-        """
-        pass
-    
+    def get_msg(self):
+        """Read line from query and return as str."""
+        try:
+            msg = self._tn.read_until("\n".encode()).decode()
+            return(msg)
+        except EOFError as err:
+            err_msg = f'Connection to query at "{self._host}" closed.'
+            self.logger.warning(err_msg)
+            raise ConnectionAbortedError(err_msg, err)
+        
     def listen(self):
         """Listen on query connection and yield messages."""
         while True:
-            try:
-                msg = self._tn.read_until("\n".encode()).decode()
-                yield(msg)
-            except EOFError as err:
-                err_msg = f'Connection to query at "{self._host}" closed.'
-                self.logger.warning(err_msg)
-                raise ConnectionAbortedError(err_msg, err)
+            yield(self.get_msg())
     
     def send(self, msg, freq=5, max_retry=3):
         """
@@ -109,7 +98,7 @@ class Query:
                 freq *= 2
                 retry += 1
                 continue
-                
+            
     def keep_alive(self, freq=180):
         """
         Query current schandlerid to keep connection alive.
