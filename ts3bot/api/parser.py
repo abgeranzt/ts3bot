@@ -16,7 +16,7 @@ class Parser:
         for msg_part in msg_split:
             key, val = re.split("=", msg_part, maxsplit=1)
             msg_dict[key.upper()] = val
-       return msg_dict
+        return msg_dict
 
     def parse_notify(self, msg):
         """Parse message from listener query and return dict."""
