@@ -19,11 +19,16 @@ class Parser:
         return msg_dict
 
     def parse_notify(self, msg):
-        """Parse message from listener query and return dict."""
+        """Parse message from notifier query and return dict."""
         msg_dict = {}
-        msg_split = re.split(" ", msg)
-        msg_dict["KIND"] = msg_split[0]
-        for msg_part in msg_split[1:]:
-            key, val = re.split("=", msg_part, maxsplit=1)
-            msg_dict[key.upper()] = val
+        msg_dict["KIND"], msg = re.split(" ", msg, maxsplit=1)
+        msg_dict["CONTENT"] = []
+        msg = re.split("\|", msg)
+        for entry in msg:
+            entry = re.split(" ", entry)
+            entry_dict = {}
+            for attr in entry:
+                key, val = re.split("=", attr, maxsplit=1)
+                entry_dict[key.upper()] = val
+            msg_dict["CONTENT"].append(entry_dict)
         return msg_dict
