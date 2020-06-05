@@ -12,9 +12,9 @@ class Parser:
     def parse_response(self, msg):
         """Parse response from interactive query and return dict."""
         msg_dict = {}
-        msg_split = re.split(" ", msg)
-        for msg_part in msg_split:
-            key, val = re.split("=", msg_part, maxsplit=1)
+        msg = re.split(" ", msg)
+        for entry in msg:
+            key, val = re.split("=", entry, maxsplit=1)
             msg_dict[key.upper()] = val
         return msg_dict
 
