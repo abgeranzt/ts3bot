@@ -90,7 +90,8 @@ class Client_Query:
                 self.logger.error(f'Sending message to query at "{self._host}" failed.')
                 self.logger.debug(err)
                 if retry > max_retry:
-                    self.logger.critical(f'Sending message to query at "{self._host}" failed after {retry + 1} attempts.')
+                    self.logger.critical(
+                        f'Sending message to query at "{self._host}" failed after {retry + 1} attempts.')
                     self.logger.error('Aborting message.')
                     raise ConnectionError("Failed to send message.")
                 self.logger.debug(f"Attempting to resend message in {freq} seconds.")
