@@ -24,4 +24,6 @@ loggers:
   parser:
     level: INFO
     handlers: [stdout, file]
-
+  server_status:
+    level: INFO
+    handlers: [stdout, file]

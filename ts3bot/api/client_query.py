@@ -106,9 +106,11 @@ class Client_Query:
         - msg: str
         - freq: int
         - max_retry: int
+
+        Return message and status.
         """
         self.send_msg(msg, freq, max_retry)
-        return self.get_msg()
+        return self.get_msg(), self.get_msg()
 
     def keep_alive(self, freq=180):
         """
