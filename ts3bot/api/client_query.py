@@ -30,7 +30,7 @@ class Client_Query:
         try:
             self.logger.info(f'Connecting to client query at "{self._host}".')
             self._tn.open(self._host, self._port, timeout=5)
-            self._tn.write(f"auth apikey={self._passwd}\n".encode())
+            self._tn.write(f"auth apikey={self._apikey}\n".encode())
             # Check for login status.
             for msg in self.listen():
                 if re.search("msg=ok", msg):
@@ -72,7 +72,7 @@ class Client_Query:
         while True:
             yield(self.get_msg())
     
-    def send(self, msg, freq=5, max_retry=3):
+    def send_msg(self, msg, freq=5, max_retry=3):
         """
         Encode and send message string to query.
         - msg: str
@@ -80,11 +80,11 @@ class Client_Query:
         - max_retry: int
         """
         retry = 0
-        while true:
+        while True:
             try:
                 self.logger.debug(f'(1/2) Sending message to query at "{self._host}".')
                 self.logger.debug(f'(2/2) Message body: "{msg}"')
-                self._tn.write(f"{msg}\n".encode(), timeout)
+                self._tn.write(f"{msg}\n".encode())
                 break
             except OSError as err:
                 self.logger.error(f'Sending message to query at "{self._host}" failed.')
@@ -99,7 +99,17 @@ class Client_Query:
                 freq *= 2
                 retry += 1
                 continue
-            
+    
+    def send_cmd(self, msg, freq=5, max_retry=3):
+        """
+        Wrapper for get_msg() and send().
+        - msg: str
+        - freq: int
+        - max_retry: int
+        """
+        self.send_msg(msg, freq, max_retry)
+        return self.get_msg()
+
     def keep_alive(self, freq=180):
         """
         Query current schandlerid to keep connection alive.
@@ -110,8 +120,9 @@ class Client_Query:
         while True:
             self.logger.debug("Sending keep alive request.")
             try:
-                self._tn.write("currentschandlerid\n".encode())
-            except OSError as err:
+                self.send_cmd("currentschandlerid")
+                #self._tn.write("currentschandlerid\n".encode())
+            except ConnectionError as err:
                 self.logger.error(f'Keep alive request for query at "{self._host}" failed.')
                 self.logger.debug(err)
                 # Kill process.
