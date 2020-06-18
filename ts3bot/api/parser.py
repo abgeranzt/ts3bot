@@ -11,6 +11,8 @@ class Parser:
 
     def parse_response(self, msg):
         """Parse response from interactive query and return dict."""
+        self.logger.debug("Parsing response: (1/2)")
+        self.logger.debug(msg)
         msg_dict = {}
         msg = re.split(" ", msg)
         for entry in msg:
@@ -20,6 +22,8 @@ class Parser:
 
     def parse_notify(self, msg):
         """Parse message from notifier query and return dict."""
+        self.logger.debug("Parsing notification: (1/2)")
+        self.logger.debug(msg)
         msg_dict = {}
         msg_dict["KIND"], msg = re.split(" ", msg, maxsplit=1)
         msg_dict["CONTENT"] = []
