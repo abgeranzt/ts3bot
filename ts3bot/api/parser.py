@@ -14,9 +14,8 @@ class Parser:
         self.logger.debug("Parsing response: (1/2)")
         self.logger.debug(msg)
         msg_list = []
-        # TODO Remove leading "/r"
-        # TODO Get rid of message status.
-        #msg = re.split("\n", msg)[0]
+        # Remove leading "/r".
+        msg = re.split("\\r", msg)[1]
         msg = re.split("\|", msg)
         for entry in msg:
             entry = re.split(" ", entry)

@@ -28,7 +28,8 @@ class Client_Query:
     def connect(self):
         """Connect to client query through telnet connection."""
         try:
-            self.logger.info(f'Connecting to client query at "{self._host}".')
+            self.logger.info(f'(1/2) Connecting to client query at "{self._host}."')
+            self.logger.info(f'(2/2) Port: {self._port}.')
             self._tn.open(self._host, self._port, timeout=5)
             self._tn.write(f"auth apikey={self._apikey}\n".encode())
             # Check for login status.
@@ -40,7 +41,7 @@ class Client_Query:
                     self.logger.error(err_msg)
                     self.logger.debug(msg)
                     raise AuthError(err_msg, msg)
-            self.logger.info(f'Successfully connected to query at "{self._host}"')    
+            self.logger.info(f'Successfully connected to query at "{self._host}".')
         except ConnectionRefusedError as err:
             err_msg = f'Connection to query at "{self._host}" refused.'
             self.logger.error(err_msg)
