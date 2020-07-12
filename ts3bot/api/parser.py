@@ -47,6 +47,7 @@ class Parser:
         msg = re.split("\\r", msg, maxsplit=1)[1]
         msg_dict["KIND"], msg = re.split(" ", msg, maxsplit=1)
         # Split head from content.
+        # TODO: Clean this up. It "just werks" but isn't very efficient.
         head = re.search(head, msg).group(0)
         msg_head, msg = re.split(head, msg)
         msg_dict["HEAD"] = "".join([msg_head, head])
