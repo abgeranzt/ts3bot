@@ -31,6 +31,8 @@ class Parser:
         self.logger.debug("(1/2) Parsing notification:")
         self.logger.debug(f"(2/2) {msg}")
         msg_dict = {}
+        # Remove leading "/r".
+        msg = re.split("\\r", msg, maxsplit=1)[1]
         msg_dict["KIND"], msg = re.split(" ", msg, maxsplit=1)
         msg_dict["CONTENT"] = []
         msg = re.split("\|", msg)
@@ -42,3 +44,4 @@ class Parser:
                 entry_dict[key.upper()] = val
             msg_dict["CONTENT"].append(entry_dict)
         return msg_dict
+
