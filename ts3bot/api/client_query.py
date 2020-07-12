@@ -24,7 +24,7 @@ class Client_Query:
         self._port = port
         self._apikey = apikey
         self._tn = Telnet()
-    
+
     def connect(self):
         """Connect to client query through telnet connection."""
         try:
@@ -57,7 +57,7 @@ class Client_Query:
             self.logger.error(err_msg)
             self.logger.debug(err)
             raise ConnectionError(err_msg, err)
-    
+
     def get_msg(self):
         """Read line from query and return as str."""
         try:
@@ -67,12 +67,12 @@ class Client_Query:
             err_msg = f'Connection to query at "{self._host}" closed.'
             self.logger.warning(err_msg)
             raise ConnectionAbortedError(err_msg, err)
-        
+
     def listen(self):
         """Listen on query connection and yield messages."""
         while True:
             yield(self.get_msg())
-    
+
     def send_msg(self, msg, freq=5, max_retry=3):
         """
         Encode and send message string to query.
@@ -92,7 +92,8 @@ class Client_Query:
                 self.logger.debug(err)
                 if retry > max_retry:
                     self.logger.critical(
-                        f'Sending message to query at "{self._host}" failed after {retry + 1} attempts.')
+                        f'Sending message to query at "{self._host}" ' \
+                        f"failed after {retry + 1} attempts.")
                     self.logger.error('Aborting message.')
                     raise ConnectionError("Failed to send message.")
                 self.logger.debug(f"Attempting to resend message in {freq} seconds.")
@@ -100,8 +101,8 @@ class Client_Query:
                 freq *= 2
                 retry += 1
                 continue
-    
-    def send_cmd(self, msg, freq=5, max_retry=3):
+
+    def send_cmd(self, msg, freq=5, max_retry=3, lines=1):
         """
         Wrapper for get_msg() and send().
         - msg: str
@@ -111,14 +112,17 @@ class Client_Query:
         Return message and status.
         """
         self.send_msg(msg, freq, max_retry)
-        return self.get_msg(), self.get_msg()
+        if lines == 1:
+            return self.get_msg()
+        elif lines == 2:
+            return self.get_msg(), self.get_msg()
 
     def keep_alive(self, freq=180):
         """
         Query current schandlerid to keep connection alive.
         Run as child process.
         Argument: Frequency in seconds.
-        - freq: int 
+        - freq: int
         """
         while True:
             self.logger.debug("Sending keep alive request.")
