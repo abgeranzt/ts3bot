@@ -11,6 +11,7 @@ class Server_Status:
         self.logger = get_logger("server_status")
         self.parser = Parser()
 
+        # FIXME: Remove carriage returns and line breaks from logs.
         # TODO: Query config, currently hardcoded
         self._freq = 5
         self._max_retry = 5
@@ -67,12 +68,12 @@ class Server_Status:
         self.logger.info("Querying for servergroups.")
         self.notify_register(query, schandlerid, "notifyservergrouplist")
         msg = query.send_cmd("servergrouplist",
-                                     self._freq,
-                                     self._max_retry)
+                             self._freq,
+                             self._max_retry)
         self.notify_unregister(query)
-        return self.parser.parse_notify(msg)
+        return self.parser.parse_notify(msg, "schandlerid=\d+\s")
 
-    def get_servergroup_permissions(self, query, sgid):
+    def get_servergroup_perms(self, query, schandlerid, sgid):
         """
         List permissions of specified servergroup.
         - query: Client_query
@@ -80,4 +81,11 @@ class Server_Status:
 
         Return dict
         """
-        pass
+        perms = []
+        self.logger.info(f'Querying permissions for servergroup id "{sgid}".')
+        self.notify_register(query, schandlerid, "notifyservergrouppermlist")
+        msg = query.send_cmd(f"servergrouppermlist sgid={sgid}",
+                             self._freq,
+                             self._max_retry)
+        self.notify_unregister(query)
+        return self.parser.parse_notify(msg, "schandlerid=\d+\s")
