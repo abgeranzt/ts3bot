@@ -27,7 +27,12 @@ class Parser:
             entry = re.split(" ", entry)
             entry_dict = {}
             for attr in entry:
-                key, val = re.split("=", attr, maxsplit=1)
+                try:
+                    key, val = re.split("=", attr, maxsplit=1)
+                # Attribute has no value:
+                except ValueError:
+                    key = attr
+                    val = ""
                 entry_dict[key.upper()] = val
             msg_list.append(entry_dict)
         return msg_list
