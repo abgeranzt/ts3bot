@@ -12,7 +12,7 @@ class Server_Status:
         self.parser = Parser()
 
         # FIXME: Remove carriage returns and line breaks from logs.
-        # TODO: Query config, currently hardcoded
+        # TODO: Query config, currently hardcoded.
         # TODO: Handle status messages.
         self._freq = 5
         self._max_retry = 5
@@ -121,6 +121,21 @@ class Server_Status:
         self.logger.info(f'Querying for clients in channel id "{cid}".')
         msg, status = query.send_cmd(f"channelclientlist cid={cid} " \
                                      "-uid -groups",
+                                     self._freq,
+                                     self._max_retry,
+                                     2)
+        return self.parser.parse_response(msg)
+
+    def get_self_info(self, query):
+        """
+        List own clid and cid.
+        - query: Client_Query
+
+        Return dict:
+        self_info{clid: CLID, ...}
+        """
+        self.logger.info(f"Querying for own ids.")
+        msg, status = query.send_cmd("whoami",
                                      self._freq,
                                      self._max_retry,
                                      2)
