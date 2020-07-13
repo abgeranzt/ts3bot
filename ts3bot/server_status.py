@@ -13,6 +13,7 @@ class Server_Status:
 
         # FIXME: Remove carriage returns and line breaks from logs.
         # TODO: Query config, currently hardcoded
+        # TODO: Handle status messages.
         self._freq = 5
         self._max_retry = 5
 
@@ -24,7 +25,8 @@ class Server_Status:
         - event: str
         """
         self.logger.debug(f'(1/3) Registering for event "{event}".')
-        status = query.send_cmd(f"clientnotifyregister schandlerid={schandlerid} " \
+        status = query.send_cmd("clientnotifyregister " \
+                                f"schandlerid={schandlerid} " \
                                 f"event={event}")
         self.logger.debug(f'(2/3) Status = "{status}".')
         self.logger.debug(f'(3/3) Registered for event "{event}".')
@@ -89,3 +91,37 @@ class Server_Status:
                              self._max_retry)
         self.notify_unregister(query)
         return self.parser.parse_notify(msg, "schandlerid=\d+\s")
+
+    def get_channels(self, query):
+        """
+        List all server channels.
+        - query: Client_Query
+
+        Return dicts in list:
+        channels[{id: ID, ...}, ...]
+        """
+        channels = []
+        self.logger.info("Querying for channels on server.")
+        msg, status = query.send_cmd("channellist -topic -limits",
+                                     self._freq,
+                                     self._max_retry,
+                                     2)
+        return self.parser.parse_response(msg)
+
+    def get_channel_clients(self, query, cid):
+        """
+        List all clients currently in specified channel.
+        - query: Client_Query
+        - cid: str
+
+        Return dicts in list:
+        clients[{id: ID, ...}, ...]
+        """
+        clients = []
+        self.logger.info(f'Querying for clients in channel id "{cid}".')
+        msg, status = query.send_cmd(f"channelclientlist cid={cid} " \
+                                     "-uid -groups",
+                                     self._freq,
+                                     self._max_retry,
+                                     2)
+        return self.parser.parse_response(msg)
