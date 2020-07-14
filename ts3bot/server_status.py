@@ -24,22 +24,18 @@ class Server_Status:
         - schandlerid: str
         - event: str
         """
-        self.logger.debug(f'(1/3) Registering for event "{event}".')
+        self.logger.debug(f'Registering for event "{event}".')
         status = query.send_cmd("clientnotifyregister " \
                                 f"schandlerid={schandlerid} " \
                                 f"event={event}")
-        self.logger.debug(f'(2/3) Status = "{status}".')
-        self.logger.debug(f'(3/3) Registered for event "{event}".')
 
     def notify_unregister(self, query):
         """
         Unregister from command output.
         - query Client_Query
         """
-        self.logger.debug("(1/3) Unregistering from all events.")
+        self.logger.debug("Unregistering from all events.")
         status = query.send_cmd("clientnotifyunregister")
-        self.logger.debug(f'(2/3) Status = "{status}".')
-        self.logger.debug("(3/3) Unregistered from all events.")
 
     def get_current_clients(self, query):
         """

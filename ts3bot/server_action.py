@@ -25,6 +25,5 @@ class Server_Action:
         """
         self.logger.info(f'Moving client "{clid}" to channel "{cid}".')
         status = query.send_cmd(f"clientmove cid={cid} clid={clid}")
-        self.logger.info(f'Successfully moved client "{clid}" to channel "{cid}".')
         return True
         # TODO: Handle insufficient permissions.
