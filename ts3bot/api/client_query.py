@@ -104,7 +104,7 @@ class Client_Query:
 
     def send_cmd(self, msg, freq=5, max_retry=3, lines=1):
         """
-        Wrapper for get_msg() and send().
+        Wrapper for get_msg() and send_msg().
         - msg: str
         - freq: int
         - max_retry: int
