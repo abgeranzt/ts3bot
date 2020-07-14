@@ -16,6 +16,7 @@ class Parser:
 
         Return str.
         """
+        self.logger.debug("Removing control characters.")
         return re.sub("\\n", "", re.sub("\\r", "", msg))
 
     def parse_response(self, msg):
@@ -25,8 +26,7 @@ class Parser:
 
         Return list.
         """
-        self.logger.debug("(1/2) Parsing response:")
-        self.logger.debug(f"(2/2) {msg}")
+        self.logger.debug("Parsing response.")
         msg_list = []
         msg = self.remove_ctrl_chars(msg)
         # Parse message.
@@ -53,17 +53,16 @@ class Parser:
 
         Return dict.
         """
-        self.logger.debug("(1/2) Parsing notification:")
-        self.logger.debug(f"(2/2) {msg}")
+        self.logger.debug("Parsing notification.")
         msg_dict = {}
         msg = self.remove_crtl_chars(msg)
         msg_dict["KIND"], msg = re.split(" ", msg, maxsplit=1)
-        # Split head from content.
-        # TODO: Clean this up. It "just werks" but isn't very efficient.
+        # Transform regex pattern into specific head.
         head = re.search(head, msg).group(0)
+        # Parse head.
         msg_head, msg = re.split(head, msg)
-        msg_dict["HEAD"] = "".join([msg_head, head])
-        # Parse content.
+        msg_dict["HEAD"] = f"{msg_head}{head}"
+        # Parse body.
         msg_dict["CONTENT"] = []
         msg = re.split("\|", msg)
         for entry in msg:
@@ -74,4 +73,3 @@ class Parser:
                 entry_dict[key.upper()] = val
             msg_dict["CONTENT"].append(entry_dict)
         return msg_dict
-
