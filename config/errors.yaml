@@ -1,0 +1,32 @@
+# Known error ids.
+0:
+  msg: "ok"
+  def: "Command completed successfully."
+256:
+  msg: "command not found"
+  def: "Invalid command."
+512:
+  msg: "invalid clientID"
+  def: "Client does not exist."
+768:
+  msg: "invalid channelID"
+  def: "Channel does not exist."
+770:
+  msg: "already member of channel"
+  def: "Client is already member of channel."
+1538:
+  msg: "invalid parameter"
+  def: "Invalid / malformed command parameter."
+1539:
+  msg: "parameter not found"
+  def: "Invalid parameter."
+1540:
+  msg: "convert error"
+  def: "Malformed command."
+2560:
+  msg: "invalid group ID"
+  def: "Group does not exist."
+2568:
+  msg: "insufficient client permissions failed_permid={permid}"
+  def: "Insufficient client permissions to perform command."
+

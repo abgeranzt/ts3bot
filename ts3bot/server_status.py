@@ -51,7 +51,7 @@ class Server_Status:
                                      self._freq,
                                      self._max_retry,
                                      2)
-        return self.parser.parse_response(msg)
+        return self.parser.parse_lines(msg)
 
     def get_servergroups(self, query, schandlerid):
         """
@@ -69,7 +69,7 @@ class Server_Status:
                              self._freq,
                              self._max_retry)
         self.notify_unregister(query)
-        return self.parser.parse_notify(msg, "schandlerid=\d+\s")
+        return self.parser.parse_message(msg, "schandlerid=\d+\s")
 
     def get_servergroup_perms(self, query, schandlerid, sgid):
         """
@@ -80,13 +80,13 @@ class Server_Status:
         Return dict
         """
         perms = []
-        self.logger.info(f'Querying permissions for servergroup id "{sgid}".')
+        self.logger.info(f'Querying permissions for servergroup ID "{sgid}".')
         self.notify_register(query, schandlerid, "notifyservergrouppermlist")
         msg = query.send_cmd(f"servergrouppermlist sgid={sgid}",
                              self._freq,
                              self._max_retry)
         self.notify_unregister(query)
-        return self.parser.parse_notify(msg, "schandlerid=\d+\s")
+        return self.parser.parse_message(msg, "schandlerid=\d+\s")
 
     def get_channels(self, query):
         """
@@ -102,7 +102,7 @@ class Server_Status:
                                      self._freq,
                                      self._max_retry,
                                      2)
-        return self.parser.parse_response(msg)
+        return self.parser.parse_lines(msg)
 
     def get_channel_clients(self, query, cid):
         """
@@ -114,13 +114,13 @@ class Server_Status:
         clients[{id: ID, ...}, ...]
         """
         clients = []
-        self.logger.info(f'Querying for clients in channel id "{cid}".')
+        self.logger.info(f'Querying for clients in channel ID "{cid}".')
         msg, status = query.send_cmd(f"channelclientlist cid={cid} " \
                                      "-uid -groups",
                                      self._freq,
                                      self._max_retry,
                                      2)
-        return self.parser.parse_response(msg)
+        return self.parser.parse_lines(msg)
 
     def get_self_info(self, query):
         """
@@ -130,9 +130,9 @@ class Server_Status:
         Return dict:
         self_info{clid: CLID, ...}
         """
-        self.logger.info(f"Querying for own ids.")
+        self.logger.info(f"Querying for own IDs.")
         msg, status = query.send_cmd("whoami",
                                      self._freq,
                                      self._max_retry,
                                      2)
-        return self.parser.parse_response(msg)
+        return self.parser.parse_lines(msg)

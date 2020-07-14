@@ -47,22 +47,23 @@ class Parser:
             line_dict[key.lower()] = val
         return line_dict
 
-    def parse_response(self, msg):
+    def parse_lines(self, msg):
         """
-        Parse response from query.
-        Wrapper for parse_line().
-        - msg: str
+        Parse items seperated by "|".
+         - msg: str
 
-        Return list with dicts.
+        Return dict(s in list).
         """
-        self.logger.debug("Parsing response.")
+        self.logger.debug("Parsing lines.")
         msg_items = []
         msg = re.split("\|", msg)
         for line in msg:
             msg_items.append(self.parse_line(line))
+        if len(msg_items) == 1:
+            msg_items = msg_items[0]
         return msg_items
 
-    def parse_notify(self, msg, head):
+    def parse_message(self, msg, head=None):
         """
         Parse message from notifier query.
         - msg: str
@@ -72,21 +73,14 @@ class Parser:
         """
         self.logger.debug("Parsing notification.")
         msg_dict = {}
-        msg = self.remove_crtl_chars(msg)
-        msg_dict["KIND"], msg = re.split(" ", msg, maxsplit=1)
-        # Transform regex pattern into specific head.
-        head = re.search(head, msg).group(0)
-        # Parse head.
-        msg_head, msg = re.split(head, msg)
-        msg_dict["HEAD"] = f"{msg_head}{head}"
+        msg = self.remove_ctrl_chars(msg)
+        msg_dict["kind"], msg = re.split(" ", msg, maxsplit=1)
+        if head != None:
+            # Transform regex pattern into specific head.
+            head = re.search(head, msg).group(0)
+            # TODO: Parse head.
+            msg_head, msg = re.split(head, msg)
+            msg_dict["head"] = f'{msg_head}{re.sub(" ", "", head)}'
         # Parse body.
-        msg_dict["CONTENT"] = []
-        msg = re.split("\|", msg)
-        for entry in msg:
-            entry = re.split(" ", entry)
-            entry_dict = {}
-            for attr in entry:
-                key, val = re.split("=", attr, maxsplit=1)
-                entry_dict[key.upper()] = val
-            msg_dict["CONTENT"].append(entry_dict)
+        msg_dict["body"] = self.parse_lines(msg)
         return msg_dict
