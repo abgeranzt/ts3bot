@@ -14,10 +14,9 @@ class Parser:
         Remove "\r" and "\n" from string.
         - msg: str
 
-        Return string.
+        Return str.
         """
-        msg = re.sub("\\r", "", msg)
-        return re.sub("\\n", "", msg)
+        return re.sub("\\n", "", re.sub("\\r", "", msg))
 
     def parse_response(self, msg):
         """
