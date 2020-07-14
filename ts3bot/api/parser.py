@@ -9,6 +9,16 @@ class Parser:
         """Basic query parser."""
         self.logger = get_logger("parser")
 
+    def remove_ctrl_chars(self, msg):
+        """
+        Remove "\r" and "\n" from string.
+        - msg: str
+
+        Return string.
+        """
+        msg = re.sub("\\r", "", msg)
+        return re.sub("\\n", "", msg)
+
     def parse_response(self, msg):
         """
         Parse response from interactive query.
@@ -19,8 +29,7 @@ class Parser:
         self.logger.debug("(1/2) Parsing response:")
         self.logger.debug(f"(2/2) {msg}")
         msg_list = []
-        # Remove leading "/r".
-        msg = re.sub("\\r", "", msg)
+        msg = self.remove_ctrl_chars(msg)
         # Parse message.
         msg = re.split("\|", msg)
         for entry in msg:
@@ -48,8 +57,7 @@ class Parser:
         self.logger.debug("(1/2) Parsing notification:")
         self.logger.debug(f"(2/2) {msg}")
         msg_dict = {}
-        # Remove leading "/r".
-        msg = re.split("\\r", msg, maxsplit=1)[1]
+        msg = self.remove_crtl_chars(msg)
         msg_dict["KIND"], msg = re.split(" ", msg, maxsplit=1)
         # Split head from content.
         # TODO: Clean this up. It "just werks" but isn't very efficient.
