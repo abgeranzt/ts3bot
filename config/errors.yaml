@@ -1,4 +1,4 @@
-# Known error ids.
+# Known error IDs.
 0:
   msg: "ok"
   def: "Command completed successfully."
