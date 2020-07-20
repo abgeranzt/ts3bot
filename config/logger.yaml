@@ -24,9 +24,13 @@ loggers:
   parser:
     level: INFO
     handlers: [stdout, file]
+  formatter:
+    level: INFO
+    handlers: [stdout, file]
   server_status:
     level: INFO
     handlers: [stdout, file]
   server_action:
     level: INFO
     handlers: [stdout, file]
+
