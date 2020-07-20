@@ -11,8 +11,8 @@ from ts3bot.misc import AuthError
 class Client_Query:
     """
     Basic API for TeamSpeak client query.
-    - host: str
-    - port: str
+    - host: int
+    - port: int
     - apikey: str
     """
     def __init__(self,

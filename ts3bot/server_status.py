@@ -18,7 +18,7 @@ class Server_Status:
         """
         Register for output of some commands.
         - query: Client_Query
-        - schandlerid: str
+        - schandlerid: int
         - event: str
         """
         self.logger.debug(f'Registering for event "{event}".')
@@ -54,7 +54,7 @@ class Server_Status:
         """
         List all servergroups on the server.
         - query: Client_Query
-        - schandlerid: str
+        - schandlerid: int
 
         Return dicts in list:
         servergroups[{id: ID, ...}, ...]
@@ -72,7 +72,7 @@ class Server_Status:
         """
         List permissions of specified servergroup.
         - query: Client_query
-        - sgid: str
+        - sgid: int
 
         Return dict
         """
@@ -105,7 +105,7 @@ class Server_Status:
         """
         List all clients currently in specified channel.
         - query: Client_Query
-        - cid: str
+        - cid: int
 
         Return dicts in list:
         clients[{id: ID, ...}, ...]
