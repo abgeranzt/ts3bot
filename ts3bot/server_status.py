@@ -10,10 +10,7 @@ class Server_Status:
         """Query information about server and clients."""
         self.logger = get_logger("server_status")
         self.parser = Parser()
-
-        # FIXME: Remove carriage returns and line breaks from logs.
-        # TODO: Query config, currently hardcoded.
-        # TODO: Handle status messages.
+        # TODO: Dynamic config, currently hardcoded.
         self._freq = 5
         self._max_retry = 5
 
@@ -69,7 +66,7 @@ class Server_Status:
                              self._freq,
                              self._max_retry)
         self.notify_unregister(query)
-        return self.parser.parse_message(msg, "schandlerid=\d+\s")
+        return self.parser.parse_message(msg, "schandlerid=\d+")
 
     def get_servergroup_perms(self, query, schandlerid, sgid):
         """
@@ -86,7 +83,7 @@ class Server_Status:
                              self._freq,
                              self._max_retry)
         self.notify_unregister(query)
-        return self.parser.parse_message(msg, "schandlerid=\d+\s")
+        return self.parser.parse_message(msg, "schandlerid=\d+")
 
     def get_channels(self, query):
         """

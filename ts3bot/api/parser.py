@@ -77,10 +77,10 @@ class Parser:
         msg_dict["kind"], msg = re.split(" ", msg, maxsplit=1)
         if head != None:
             # Transform regex pattern into specific head.
+            # Required for lookbehind.
             head = re.search(head, msg).group(0)
-            # TODO: Parse head.
-            msg_head, msg = re.split(head, msg)
-            msg_dict["head"] = f'{msg_head}{re.sub(" ", "", head)}'
+            head, msg = re.split(f"(?<={head})\s", msg, maxsplit=1)
+            msg_dict["head"] = self.parse_lines(head)
         # Parse body.
         msg_dict["body"] = self.parse_lines(msg)
         return msg_dict

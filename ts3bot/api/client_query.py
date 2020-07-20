@@ -127,7 +127,6 @@ class Client_Query:
             self.logger.debug("Sending keep alive request.")
             try:
                 self.send_cmd("currentschandlerid")
-                #self._tn.write("currentschandlerid\n".encode())
             except ConnectionError as err:
                 self.logger.error(f'Keep alive request for query at "{self._host}" failed.')
                 self.logger.debug(err)
