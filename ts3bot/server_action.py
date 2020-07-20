@@ -68,15 +68,14 @@ class Server_Action:
             3: "server"}
         self.logger.info(f'Sending message to {targets[targetmode]}.')
         self.logger.debug(f'Msg: "{msg}"')
-        msg = self.formatter.rep_whitespace(msg) 
         status = self.parser.parse_message(
             query.send_cmd(f"sendtextmessage targetmode={targetmode} " \
-                           f"target={clid} msg={msg}"))
+                           f"target={clid} " \
+                           f"msg={self.formatter.rep_whitespace(msg)}"))
         if status["body"]["id"] == 0:
             return True
         else:
             self.logger.warn("Sending private text message failed!")
             self.report_error(status)
             return False
-
 

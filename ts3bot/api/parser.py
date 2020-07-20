@@ -6,7 +6,7 @@ from ts3bot.logger import get_logger
 
 class Parser:
     def __init__(self):
-        """Basic query parser."""
+        """Parser for query output."""
         self.logger = get_logger("parser")
 
     def remove_ctrl_chars(self, msg):
@@ -84,3 +84,26 @@ class Parser:
         # Parse body.
         msg_dict["body"] = self.parse_lines(msg)
         return msg_dict
+
+    def parse_command(self, cmd):
+        """
+        Parse client message for commands.
+        - cmd: str
+
+        Return dict if message is command.
+        Otherwise return False.
+        """
+        self.logger.debug("Parsing command.")
+        self.logger.debug(f'Cmd: "{cmd}".')
+        try:
+            cmd = re.split("^\!", cmd, maxsplit=1)[1]
+        except IndexError: 
+            self.logger.debug("Message is not a command.")
+            return False
+        cmd_dict = {}
+        cmd = re.split(" ", cmd)
+        cmd_dict["cmd"] = cmd[0]
+        cmd_dict["args"] = []
+        for arg in cmd[1:]:
+            cmd_dict["args"].append(arg)
+        return cmd_dict
