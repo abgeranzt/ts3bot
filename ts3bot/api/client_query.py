@@ -111,6 +111,7 @@ class Client_Query:
         Return message and status.
         """
         self.send_msg(msg, freq, max_retry)
+        # Use explicit number because number of output lines depends on command.
         if lines == 1:
             return self.get_msg()
         elif lines == 2:
