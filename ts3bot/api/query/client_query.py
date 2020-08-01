@@ -6,7 +6,7 @@ import time
 
 # local
 from ts3bot.logger import get_logger
-from ts3bot.misc import AuthError
+from ts3bot.errors import AuthError
 
 class Client_Query:
     """
