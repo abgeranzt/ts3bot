@@ -6,7 +6,7 @@ import time
 
 # local
 from ts3bot.logger import get_logger
-from ts3bot.misc import AuthError
+from ts3bot.errors import AuthError
 
 class Client_Query:
     """
@@ -26,7 +26,11 @@ class Client_Query:
         self._tn = Telnet()
 
     def connect(self):
-        """Connect to client query through telnet connection."""
+        """
+        Connect to client query through telnet connection.
+
+        Return True if successfull, otherwise False.
+        """
         try:
             self.logger.info(f"Connecting to {self._host}:{self._port}.")
             self._tn.open(self._host, self._port, timeout=5)
@@ -36,26 +40,32 @@ class Client_Query:
                 if re.search("msg=ok", msg):
                     break
                 elif re.search("error", msg):
-                    err_msg = f'Query login at "{self._host}" failed.'
-                    self.logger.error(err_msg)
+                    err_log = f'Query login at "{self._host}" failed.'
+                    self.logger.error(err_log)
                     self.logger.debug(msg)
-                    raise AuthError(err_msg, msg)
+                    raise AuthError(err_log, msg)
             self.logger.info(f'Connected to "{self._host}".')
+            return True
+        # Connection refused.
         except ConnectionRefusedError as err:
-            err_msg = f'Connection to "{self._host}" refused.'
-            self.logger.error(err_msg)
-            self.logger.debug(err)
-            raise ConnectionRefusedError(err_msg, err)
+            err_log = f'Connection to "{self._host}" refused.'
+            err_msg = err
+        # No route to host.
+        # TODO: Other causes that use OSError are possible but not known.
+        except OSError as err:
+            err_log = f'Connection to "{self._host}" failed.'
+            err_msg = err
+        # TODO: What error is this?
         except gaierror as err:
-            err_msg = f'Connection to "{self._host}" failed.'
-            self.logger.error(err_msg)
-            self.logger.debug(err)
-            raise ConnectionError(err_msg, err)
+            err_log = f'Connection to "{self._host}" failed.'
+            err_msg = err
+        # Connection timed out.
         except timeout as err:
-            err_msg = f'Connection to "{self._host}" timed out.'
-            self.logger.error(err_msg)
-            self.logger.debug(err)
-            raise ConnectionError(err_msg, err)
+            err_log = f'Connection to "{self._host}" timed out.'
+            err_msg = err
+        self.logger.error(err_log)
+        self.logger.debug(err_msg)
+        return False
 
     def get_msg(self):
         """Read line from query and return as str."""
@@ -63,9 +73,9 @@ class Client_Query:
             msg = self._tn.read_until("\n".encode()).decode()
             return(msg)
         except EOFError as err:
-            err_msg = f'Connection to query at "{self._host}" closed.'
-            self.logger.warning(err_msg)
-            raise ConnectionAbortedError(err_msg, err)
+            err_log = f'Connection to query at "{self._host}" closed.'
+            self.logger.warning(err_log)
+            raise ConnectionAbortedError(err_log, err)
 
     def listen(self):
         """Listen on query connection and yield messages."""

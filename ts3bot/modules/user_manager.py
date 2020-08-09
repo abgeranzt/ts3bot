@@ -15,7 +15,7 @@ class Server_Action:
         # TODO: Query config, currently hardcoded.
         self._freq = 5
         self._max_retry = 5
-        with open("config/errors.yaml", "r") as errors:
+        with open("config/local/errors.yaml", "r") as errors:
             self._errors = yaml.safe_load(errors)
 
     def report_error(self, status):

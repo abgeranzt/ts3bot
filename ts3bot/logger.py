@@ -4,10 +4,14 @@ import os
 import yaml
 
 def get_logger(name):
-    """Return configured logger object."""
+    """
+    Load logging config from file and return logger object.
+    Create new directory for logs if necessary.
+    """
     if not os.path.exists("logs"):
         os.mkdir("logs")
-    with open("config/logger.yaml", "r") as cfg:
-        logging.config.dictConfig(yaml.safe_load(cfg))
-    logger = logging.getLogger(name)
-    return logger
+    cfg_path = os.path.join("config", "local", "logger.yaml")
+    with open(cfg_path, "r") as cfg_file:
+        cfg = yaml.safe_load(cfg_file)
+        logging.config.dictConfig(cfg)
+    return logging.getLogger(name)
