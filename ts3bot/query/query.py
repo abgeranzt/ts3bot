@@ -4,7 +4,7 @@ from socket import gaierror, timeout
 from telnetlib import Telnet
 
 # local
-from ts3bot.errors import AuthError
+from ts3bot.errors import AuthError, QueryTimeout
 
 class Query:
     """
@@ -57,7 +57,10 @@ class Query:
         """
         try:
             line = self._telnet.read_until("\n".encode(), timeout=timeout)
-            return line.decode()
+            line = line.decode()
+            if line == "":
+                raise QueryTimeout
+            return line
         except EOFError:
             raise ConnectionAbortedError
 

@@ -4,11 +4,11 @@ import time
 import yaml
 
 # local
-from ts3bot.errors import AuthError
-from ts3bot.job import Job
+from ts3bot.errors import AuthError, QueryTimeout
 from ts3bot.logger import get_logger
 from ts3bot.query.interface import Interface as iface
 from ts3bot.query.query import Query
+from ts3bot.threads.job import Job
 
 # TODO: Implement error codes upon thread termination.
 # Always returns false at the moment.
@@ -43,7 +43,7 @@ class Listener:
                 self._logger.debug("Found line. Creating Job.")
                 job = Job("raw_output", line, "listener", "interpreter")
                 self._queue.put(job)
-            except timeout:
+            except QueryTimeout:
                 iface.keep_alive(self._query)
 
     # --- Private Methods ---
