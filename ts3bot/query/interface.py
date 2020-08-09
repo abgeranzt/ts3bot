@@ -39,7 +39,7 @@ class Interface:
                             f"clientnotifyregister " \
                             f"schandlerid={schandlerid} " \
                             f"event={event}")
-        error = Parser.parse_error(response)
+        error = Parser.parse_error(response[0])
         if error.error_id == 0:
             return True
         else:

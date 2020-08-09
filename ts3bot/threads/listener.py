@@ -1,7 +1,10 @@
 # std
 import os
+import time
+import yaml
 
 # local
+from ts3bot.errors import AuthError
 from ts3bot.job import Job
 from ts3bot.logger import get_logger
 from ts3bot.query.interface import Interface as iface
@@ -18,39 +21,46 @@ class Listener:
         self._queue = queue
 
     # --- Public Methods ---
-    def listener(self):
+
+    def listen(self):
         """
         Listen query and create jobs.
         Return False if interrupted.
         """
-        # Establish connection
+        # Establish connection.
         self._logger.info("INIT (1/2): Connecting to query.")
+        if not self._connect():
+            return False
+        # Register for notifications.
+        self._logger.info("INIT (2/2): Registering for event notifications.")
+        if not self._register():
+            return False
+        # Listen.
+        self._logger.info("Init complete. Listening.")
+        while True:
+            try:
+                line = self._query.read_line(120)
+                self._logger.debug("Found line. Creating Job.")
+                job = Job("raw_output", line, "listener", "interpreter")
+                self._queue.put(job)
+            except timeout:
+                iface.keep_alive(self._query)
+
+    # --- Private Methods ---
+
+    def _connect(self):
+        """Establish connection."""
         try:
             # Attempt to connect 3 times.
-            for _ in range(3):
+            for attempt in range(2):
                 if self._query.connect():
-                    break
+                   return True
+                time.sleep(5)
                 self._logger.info("Retrying connection.")
             self._logger.critical("Connection to query failed!")
             return False
         except AuthError:
             return False
-
-        # Register for notifications.
-        self._logger.info("INIT (2/2): Registering for event notifications.")
-        if not self._register():
-            return False
-
-        # Listen.
-        self._logger.info("Init complete. Listening.")
-        while True:
-            try:
-                line = self._query.read_line(self, timeout=120)
-                # TODO Create Job
-            except timeout:
-                iface.keep_alive(self._query)
-
-    # --- Private Methods ---
 
     def _register(self):
         """Register for notifications."""

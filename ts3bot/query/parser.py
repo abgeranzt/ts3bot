@@ -2,7 +2,7 @@
 import re
 
 # local
-import ts3bot.query.response
+from ts3bot.query.response import Error, Event, Response
 
 class Parser:
     def __init__(self):
@@ -21,7 +21,7 @@ class Parser:
         event_type, schandlerid, line = re.split(" ", line, maxsplit=2)
         body = cls._parse_body(line)
         schandlerid = int(re.split("=", schandlerid)[1])
-        return response.Event(event_type, body, schandlerid)
+        return Event(event_type, body, schandlerid)
 
     @classmethod
     def parse_response(cls, line, error):
@@ -32,7 +32,7 @@ class Parser:
         line = cls._rm_ctrl_chars(line)
         body = cls._parse_body(line)
         error = cls.parse_error(error)
-        return response.Response(body, error)
+        return Response(body, error)
 
     @classmethod
     def parse_error(cls, line):
@@ -40,11 +40,12 @@ class Parser:
         Parse error id response.
         Return response object.
         """
+        line = cls._rm_ctrl_chars(line)
         line = re.sub("error ", "", line)
         body = cls._parse_content(line)
         error_id = int(body["id"])
         error_msg = body["msg"]
-        return response.Error(error_id, error_msg)
+        return Error(error_id, error_msg)
 
     # --- Private Methods ---
 
@@ -84,7 +85,7 @@ class Parser:
         return body
 
     @staticmethod
-    def _rm_crtl_chars(line):
+    def _rm_ctrl_chars(line):
         """Remove and "\n" and "\r" from string and return it."""
         return re.sub("\\n|\\r", "", line)
 

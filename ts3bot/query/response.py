@@ -1,20 +1,6 @@
 # std
+import os
 import yaml
-
-class Response:
-    """Reponse object."""
-    def __init__(self, body, error):
-        self.reponse_type = "response"
-        self.body = body
-        self.error = error
-
-class Event:
-    """Event response object."""
-    def __init__(self, event_type, body, schandlerid):
-        self.reponse_type = "event"
-        self.event_type = event_type
-        self.body = event_body
-        self.schandlerid = schandlerid
 
 class Error:
     """Error response object."""
@@ -30,3 +16,18 @@ class Error:
         with open(cfg_path, "r") as cfg_file:
             cfg = yaml.safe_load(cfg_file)
         return cfg[self.error_id]["def"]
+
+class Event:
+    """Event response object."""
+    def __init__(self, event_type, body, schandlerid):
+        self.reponse_type = "event"
+        self.event_type = event_type
+        self.body = event_body
+        self.schandlerid = schandlerid
+
+class Response:
+    """Reponse object."""
+    def __init__(self, body, error):
+        self.reponse_type = "response"
+        self.body = body
+        self.error = error

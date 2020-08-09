@@ -1,7 +1,6 @@
 # std
 import re
-# TODO Import of exceptions necessary?
-#from socket import gaierror, timeout
+from socket import gaierror, timeout
 from telnetlib import Telnet
 
 # local
@@ -34,7 +33,7 @@ class Query:
             self._telnet.open(self._HOST, self._PORT, timeout=5)
             self.write(f"auth apikey={self._APIKEY}")
             # Check for login success.
-            for line in self._read_all():
+            for line in self.read_all():
                 if re.search("msg=ok", line):
                     log_i("Connection established.")
                     return True
@@ -50,7 +49,7 @@ class Query:
             log_e("No route to host.")
         except timeout:
             log_e("Connection timed out.")
-        return false
+        return False
 
     def read_line(self, timeout=None):
         """
