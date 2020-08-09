@@ -58,7 +58,7 @@ class Query:
         try:
             line = self._telnet.read_until("\n".encode(), timeout=timeout)
             line = line.decode()
-            if line == "":
+            if not re.search("\w", line):
                 raise QueryTimeout
             return line
         except EOFError:

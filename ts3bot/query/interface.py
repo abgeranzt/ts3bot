@@ -15,7 +15,7 @@ class Interface:
         try:
             for _ in range(response_len):
                 response.append(query.read_line(2))
-        except timeout:
+        except QueryTimeout:
             # The query returns only 1 line when the command failed.
             if len(reponse) > 0 and response_len > 1:
                 response[1] = response[0]
