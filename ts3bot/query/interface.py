@@ -3,17 +3,13 @@ from ts3bot.errors import QueryError
 from ts3bot.query.parser import Parser
 
 class Interface:
-    """
-    Various methods for interaction with query objects.
-    """
+    """Various methods for interaction with query objects."""
     def __init__(self):
         pass
 
     @staticmethod
     def send(query, line, response_len=1):
-        """
-        Write line to query and return reponse lines as [str, ...].
-        """
+        """Write line to query and return reponse lines as [str, ...]."""
         response = []
         query.write(line)
         try:
@@ -30,9 +26,7 @@ class Interface:
 
     @classmethod
     def keep_alive(cls, query):
-        """
-        Keep query connection alive.
-        """
+        """Keep query connection alive."""
         cls.send(query, "whoami")
 
     @classmethod
@@ -50,3 +44,7 @@ class Interface:
             return True
         else:
             return error
+    @classmethod
+    def notify_unregister(cls, query):
+        """Unregister from event notifications."""
+        cls.send(query, "clientnotifyunregister")
