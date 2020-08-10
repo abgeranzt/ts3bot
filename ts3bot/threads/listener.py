@@ -41,7 +41,7 @@ class Listener:
             try:
                 line = self._query.read_line(120)
                 self._logger.debug("Found line. Creating Job.")
-                job = Job("raw_output", line, "listener", "interpreter")
+                job = Job("query_event", line, "listener", "worker")
                 self._queue.put(job)
             except QueryTimeout:
                 iface.keep_alive(self._query)

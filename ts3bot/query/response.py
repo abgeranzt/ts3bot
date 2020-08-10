@@ -3,7 +3,7 @@ import os
 import yaml
 
 class Error:
-    """Error response object."""
+    """Error Response object."""
     def __init__(self, error_id, error_msg):
         self.reponse_type = "error"
         self.error_id = error_id
@@ -18,7 +18,7 @@ class Error:
         return cfg[self.error_id]["def"]
 
 class Event:
-    """Event response object."""
+    """Event Response object."""
     def __init__(self, event_type, body, schandlerid):
         self.reponse_type = "event"
         self.event_type = event_type
