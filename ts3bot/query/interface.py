@@ -27,7 +27,7 @@ class Interface:
     @classmethod
     def keep_alive(cls, query):
         """Keep query connection alive."""
-        cls.send(query, "whoami")
+        cls.send(query, "whoami", 2)
 
     @classmethod
     def notify_register(cls, query, event, schandlerid):
