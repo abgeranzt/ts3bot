@@ -22,7 +22,7 @@ class Event:
     def __init__(self, event_type, body, schandlerid):
         self.reponse_type = "event"
         self.event_type = event_type
-        self.body = event_body
+        self.body = body
         self.schandlerid = schandlerid
 
 class Response:
