@@ -3,36 +3,37 @@ import re
 from socket import gaierror, timeout
 from telnetlib import Telnet
 
-# local
-from .errors import AuthError, QueryTimeout
-
 class Query:
-    """
-    Interface for TeamSpeak client query.
+    """Interface for TeamSpeak client query.
     
-    - host: int
-    - port: int
-    - apikey: str
-    - logger: logger object
+    Attributes:
+        host: query host
+        port (int): query port
+        apikey (str): query api key
+        logger (logger): configured logger
     """
-    def __init__(self, host, port, apikey, logger=None):
+    def __init__(self, host, port, apikey, logger):
         self.HOST = host
         self.PORT = port
         self._APIKEY = apikey
         self._logger = logger
         self._tn = Telnet()
+    
+    # --- basic methods ---
 
     def connect(self):
+        """Connect to query through telnet.
+        
+        Returns:
+            status (int): status code
+
+        Status codes:
+            0: OK
+            1: connection error
+            3: auth error
         """
-        Connect to query through telnet.
-        Return exit status:
-        0: OK
-        1: Connection error
-        2: Authentification error
-        """
-        self._logger.info(
-            f"Connecting to query at {self.HOST}:{self.PORT}"
-        )
+        self._logger.info(f"Connecting to query at {self.HOST}" \
+                          f":{self.PORT}")
         try:
             # Open connection and authenticate.
             self._tn.open(self.HOST, self.PORT, timeout=5)
@@ -45,7 +46,7 @@ class Query:
                 elif re.search("error", line):
                     self._logger.error("Query authentification failed!")
                     self._logger.debug(line)
-                    return 2
+                    return 3
         except ConnectionRefusedError:
             self._logger.error("Connection refused!")
         except gaierror:
@@ -57,27 +58,139 @@ class Query:
         return 1
 
     def read_line(self, timeout=None):
-        """
-        Read line from query and return it as str.
+        """Read line from query.
+
+        Args:
+            timeout (int): timeout in seconds
+
+        Returns:
+            status (int): status code
+            line (str): line of query output
+
+        Status codes:
+            0: OK
+            1: connection error
+            2: read timeout
         """
         try:
             line = self._tn.read_until("\n".encode(), timeout=timeout)
             line = line.decode()
             if not re.search(r"\w", line):
-                raise QueryTimeout
-            return line
+               return 2, "" 
+            return 0, line
         except EOFError:
-            raise ConnectionAbortedError
+            return 1, ""
 
     def read_all(self, timeout=None):
-        """
-        Yield lines from query as str.
+        """Read lines from query.
+
+        Yield values returned by self.read_line()
+
+        Args:
+            timeout (int): timeout in seconds
+
+        Yields:
+            status (int): status code
+            line (str): line of query output
         """
         while True:
             yield(self.read_line(timeout))
 
     def write(self, line):
-        """
-        Write line to query.
+        """Write line to query.
+
+        Args:
+            line (str): line to write
         """
         self._tn.write(f"{line}\n".encode())
+
+    # --- wrapper methods ---
+
+    def send(self, line, response_len):
+        """Write line to query and return answer.
+
+        Wrapper for self.write() and self.read_line().
+
+        Args:
+            line (str): line to write
+            response_len (1): expected amount of lines returned by query
+
+        Returns:
+            status (int): status code
+            response_lines (str[]): list containing query output lines
+
+        Status codes:
+            0: OK
+            1: connection error
+            2: query returned error
+        """
+        response_lines = []
+        self.write(line)
+        for _ in range(response_len):
+            status, response = self.read_line(timeout=2)
+            if status == 0:
+                response_lines.append(response)
+            elif status == 1:
+                return 1, []
+            else:
+                return 2, response_lines
+        return 0, response_lines
+
+    def keep_alive(self):
+        """Keep query connection alive.
+
+        Send "whoami" through self.send().
+
+        Returns:
+            status (int): status code
+            response (str): query output line
+
+        Status codes:
+            0: OK
+            1: connection error
+            2: query returned error
+        """
+        status, response = self.send("whoami", 1)
+        return status, response[0]
+
+    def notitfy_register(self, event, schandlerid=1):
+        """Register for query event notifications.
+
+        Send request through self.send().
+        Check whether request was successfull.
+
+        Args:
+            event (str): event
+            schandlerid (int): schandlerid (defaults to 1)
+
+        Returns:
+            status (int): status code
+            response (str): query output line
+
+        Status codes:
+            0: OK
+            1: connection error
+            2: query returned error
+        """
+        status, response = self.send(f"clientnotifyregister " \
+                                     f"schandlerid={schandlerid} " \
+                                     f"event={event}", 1)
+        return status, response[0]
+
+    def notify_unregister(self):
+        """Unregister from all event notifications.
+
+        Send request through self.send().
+        Check whether request was successfull.
+
+        Returns:
+            status (int): status code
+            response (str): query output line
+
+        Status codes:
+            0: OK
+            1: connection error
+            2: query returned error
+        """
+        status, response = self.send("clientnotifyunregister", 1)
+        return status, response[0]
