@@ -1,20 +1,24 @@
 #std
+import logging.config
 import time
 
 class Listener:
-    def __init__(self, events, query, queue, logger):
+    def __init__(self, events, query, queue, logging_config):
         """Listener for TeamSpeak client query.
 
         Attributes:
             events (str[]): events to listen for
             query (query): query interface
             queue (queue): queue for interpreter
-            logger (logger): configured logger
+            logger (dict): logger configuration 
         """
         self.EVENTS = events
         self._query = query
         self.queue = queue
-        self._logger = logger
+
+        # Configure logging.
+        logging.config.dictConfig(logging_config)
+        self._logger = logging.getLogger("listener")
 
     def listen(self):
         """Listen on query and queue output for processing.

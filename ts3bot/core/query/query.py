@@ -1,4 +1,5 @@
 # std
+import logging.config
 import re
 from socket import gaierror, timeout
 from telnetlib import Telnet
@@ -10,16 +11,19 @@ class Query:
         host: query host
         port (int): query port
         apikey (str): query api key
-        logger (logger): configured logger
+        logger (dict): logger configuration
     """
-    def __init__(self, host, port, apikey, logger):
+    def __init__(self, host, port, apikey, logging_config):
         self.HOST = host
         self.PORT = port
         self._APIKEY = apikey
-        self._logger = logger
         self._tn = Telnet()
-    
-    # --- basic methods ---
+
+        # Configure logging.
+        logging.config.dictConfig(logging_config)
+        self._logger = logging.getLogger("listener")
+
+    # --- Basic Methods ---
 
     def connect(self):
         """Connect to query through telnet.
@@ -40,12 +44,12 @@ class Query:
             self.write(f"auth apikey={self._APIKEY}")
             # Check for auth success.
             for line in self.read_all():
-                if re.search("msg=ok", line):
+                if re.search("msg=ok", line[1]):
                     self._logger.info("Query connection OK.")
                     return 0
-                elif re.search("error", line):
+                elif re.search("error", line[1]):
                     self._logger.error("Query authentification failed!")
-                    self._logger.debug(line)
+                    self._logger.debug(line[1])
                     return 3
         except ConnectionRefusedError:
             self._logger.error("Connection refused!")
@@ -104,7 +108,7 @@ class Query:
         """
         self._tn.write(f"{line}\n".encode())
 
-    # --- wrapper methods ---
+    # --- Wrapper Methods ---
 
     def send(self, line, response_len):
         """Write line to query and return answer.
@@ -153,7 +157,7 @@ class Query:
         status, response = self.send("whoami", 1)
         return status, response[0]
 
-    def notitfy_register(self, event, schandlerid=1):
+    def notify_register(self, event, schandlerid=1):
         """Register for query event notifications.
 
         Send request through self.send().
