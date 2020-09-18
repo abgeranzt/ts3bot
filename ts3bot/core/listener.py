@@ -10,7 +10,7 @@ class Listener:
             events (str[]): events to listen for
             query (query): query interface
             queue (queue): queue for interpreter
-            logger (dict): logger configuration 
+            logging_config (dict): logger configuration 
         """
         self.EVENTS = events
         self._query = query
