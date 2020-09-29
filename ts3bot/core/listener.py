@@ -3,15 +3,15 @@ import logging.config
 import time
 
 class Listener:
-    def __init__(self, events, query, queue, logging_config):
-        """Listener for TeamSpeak client query.
+    """Listener for TeamSpeak client query.
 
-        Attributes:
-            events (str[]): events to listen for
-            query (query): query interface
-            queue (queue): queue for interpreter
-            logging_config (dict): logger configuration 
-        """
+    Attributes:
+        events (str[]): events to listen for
+        query (query): query interface
+        queue (queue): queue for interpreter
+        logging_config (dict): logger configuration 
+    """
+    def __init__(self, events, query, queue, logging_config):
         self.EVENTS = events
         self._query = query
         self.queue = queue
