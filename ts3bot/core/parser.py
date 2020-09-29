@@ -84,3 +84,15 @@ class Parser:
                 attributes[key] = val
             response.append(attributes)
         return response
+
+    def parse_command(self, event):
+        """Parse user command.
+
+        Args:
+            event (dict): query event with command string
+
+        Returns:
+            command (dict): dict with command, options, args
+        """
+        # TODO
+        pass
